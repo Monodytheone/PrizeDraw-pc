@@ -73,3 +73,10 @@ export function ChangeHideEmployeeInfoStatus(hideEmployeeInfo: boolean) {
     method: 'POST',
   })
 }
+
+export function SetNotary(notary: String) {
+  return request({
+    url: `/api/SetData/SetNotary?notary=${notary}`,
+    method: 'POST',
+  })
+}

@@ -1,13 +1,19 @@
 <template>
+  <div style="position: fixed; left:30px; top:40px; font-size: 30px;">
+    <a style="color: #ffcc00; font-weight: bolder;">公证人: </a>
+    <a style="color: white;">{{ notary }}</a>
+  </div>
   <div class="page-wrapper">
     <div class="content">
       <!-- 顶部标题和重置按钮 -->
+      <div class="header" v-if="endTitle" style="color: #ffcc00; font-size: 180px; font-weight: bolder; margin: auto;">
+        抽奖已结束</div>
       <div class="header">
         <div class="switch1">
           隱藏員工信息
           <el-switch v-model="infoSwitch" @change="onHideEmployeeInfoChange" />
         </div>
-        <div class="title" v-if="endTitle">抽奖已结束</div>
+
         <el-button type="warning" @click="backhome()">重置抽奖</el-button>
       </div>
 
@@ -46,14 +52,14 @@
             <template #default="scope">
               <span>{{
                 infoSwitch ? '*'.repeat(scope.row.winnerId && scope.row.winnerId.length) : scope.row.winnerId
-                }}</span>
+              }}</span>
             </template>
           </el-table-column>
           <el-table-column label="中奖人姓名" width="100">
             <template #default="scope">
               <span>{{
                 infoSwitch ? '*'.repeat(scope.row.winnerName && scope.row.winnerName.length) : scope.row.winnerName
-                }}</span>
+              }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="winnerDepartment" label="中奖人部门" width="180" />
@@ -153,7 +159,7 @@
           <div class="right">
             <el-button type="primary" class="stop-button" @click="stoproll">{{
               rollstart ? '停' : '继续抽奖'
-              }}</el-button>
+            }}</el-button>
           </div>
         </div>
         <div class="rolling-tables">
@@ -165,14 +171,14 @@
               <template #default="scope">
                 <span>{{
                   infoSwitch ? '*'.repeat(scope.row.winnerId && scope.row.winnerId.length) : scope.row.winnerId
-                  }}</span>
+                }}</span>
               </template>
             </el-table-column>
             <el-table-column label="中奖人姓名">
               <template #default="scope">
                 <span>{{
                   infoSwitch ? '*'.repeat(scope.row.winnerName && scope.row.winnerName.length) : scope.row.winnerName
-                  }}</span>
+                }}</span>
               </template>
             </el-table-column>
             <el-table-column prop="winnerDepartment" label="中奖人部门" />
@@ -195,6 +201,7 @@ const dialogTableVisible1 = ref(false);
 const addBonusPrizeVisible = ref(false);
 const endTitle = ref(false);
 const infoSwitch = ref(false);
+const notary = ref('');
 
 // 存放开始滚动消息
 const current = ref({});
@@ -246,6 +253,9 @@ const back = () => {
       tableData.prizeRecords = res.prizeRecords;
       tableData.rafflePrizes = res.rafflePrizes;
       tableData.winningAmountByDepartment = res.winningAmountByDepartment;
+      if (res.sysStatus === 5) {
+        endTitle.value = true;
+      }
     }
   });
 };
@@ -290,6 +300,7 @@ const onAddPrizeSubmit = () => {
       tableData.rafflePrizes = response;
       addBonusPrizeVisible.value = false;
       ElMessage.success('添加成功');
+      endTitle.value = false;
     })
     .catch(error => {
       ElMessage.error(error.response.data);
@@ -361,6 +372,7 @@ const getTableData = async () => {
   getData().then((res) => {
     if (res) {
       infoSwitch.value = res.hideEmployeeInfo;
+      notary.value = res.notary;
       if (res.sysStatus === 5) {
         endTitle.value = true;
         tableData.employees = res.started_2_5.employees;
