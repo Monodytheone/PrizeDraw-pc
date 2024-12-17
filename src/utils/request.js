@@ -98,7 +98,8 @@ service.interceptors.response.use(
       window.location.reload();
       // window.location.href = '/'; // 去登录页
     } else {
-      if (error.response.data) ElMessage.error(error.response.statusText);
+      if (error.response.data)
+        ElMessage.error(error.response.data); // error.response.data为后端return BadRequest中的参数
       else ElMessage.error('接口路徑找不到');
     }
     return Promise.reject(error);
