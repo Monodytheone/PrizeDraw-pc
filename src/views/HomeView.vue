@@ -36,6 +36,10 @@
             <el-button type="warning" @click="add">添加奖项</el-button>
             <el-button type="success" @click="SetPrize">上传奖项列表</el-button>
           </div>
+          <br><br>
+          <div class="title">公证人</div><br>
+          <el-input v-model="notary" placeholder="请输入公证人" style="width: 250px; margin-left: 100px;" />
+          <el-button type="primary" style="margin-left: 20px;" @click="onSetNotary">设置公证人</el-button>
         </div>
       </div>
     </div>
@@ -50,7 +54,7 @@
 <script setup>
 import { reactive, ref, computed, onMounted } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus';
-import { getData, SetRafflePrize, SysStatusStart, UploadEmployees } from '@/api/home';
+import { getData, SetNotary, SetRafflePrize, SysStatusStart, UploadEmployees } from '@/api/home';
 import router from '@/router/index';
 
 const tableData = reactive({
@@ -64,6 +68,12 @@ const tableData = reactive({
 
 const files = ref([]);
 const uploadRef = ref();
+
+const notary = ref('');
+
+const onSetNotary = () => {
+  SetNotary(notary.value).then(() => ElMessage.success('设置成功'));
+}
 
 const requestSuccessMethod = async (file) => {
   const res = await UploadEmployees(file.file);
@@ -105,6 +115,7 @@ const start = () => {
 const getTableData = async () => {
   const res = await getData();
   tableData.employees = res.notStart_1?.employees || [];
+  notary.value = res.notary;
   if (res.notStart_1.rafflePrizes.length > 0) {
     tableData.rafflePrizes = res.notStart_1.rafflePrizes;
   }
